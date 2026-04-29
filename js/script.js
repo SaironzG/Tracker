@@ -1,6 +1,84 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. Navbar Scroll Effect ---
+    // --- 1. Custom Cursor ---
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+    
+    // Only apply custom cursor on non-touch devices
+    if (window.matchMedia("(pointer: fine)").matches) {
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            
+            // Add a slight delay for the outline for a smooth trailing effect
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // Add hover effect for clickable elements
+        const clickables = document.querySelectorAll('a, button, .feature-item, .benefit-card, .step-card, .asset-item');
+        clickables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.width = '60px';
+                cursorOutline.style.height = '60px';
+                cursorOutline.style.backgroundColor = 'rgba(79, 70, 229, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.width = '40px';
+                cursorOutline.style.height = '40px';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+    }
+
+    // --- 2. Magnetic Buttons ---
+    const magneticButtons = document.querySelectorAll('.btn');
+    magneticButtons.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Calculate pull strength
+            const pullX = (x - rect.width / 2) * 0.3;
+            const pullY = (y - rect.height / 2) * 0.3;
+            
+            btn.style.transform = `translate(${pullX}px, ${pullY}px) scale(1.05)`;
+        });
+        
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = `translate(0px, 0px) scale(1)`;
+        });
+    });
+
+    // --- 3. 3D Tilt Effect for Cards ---
+    const tiltCards = document.querySelectorAll('.benefit-card, .step-card, .asset-item');
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x position within the element.
+            const y = e.clientY - rect.top;  // y position within the element.
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -10; // Max rotation 10deg
+            const rotateY = ((x - centerX) / centerX) * 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        });
+    });
+
+    // --- 4. Navbar Scroll Effect ---
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
@@ -10,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 2. Scroll Reveal Animations (Intersection Observer) ---
+    // --- 5. Scroll Reveal Animations (Intersection Observer) ---
     const revealElements = document.querySelectorAll('.reveal');
     
     const revealOptions = {
@@ -33,9 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
         revealOnScroll.observe(el);
     });
 
-    // --- 3. Number Counter Animation ---
+    // --- 6. Number Counter Animation ---
     const counters = document.querySelectorAll('.counter');
-    const speed = 200; // The lower the slower
+    const speed = 200; 
 
     const startCounters = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
@@ -44,15 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const updateCount = () => {
                     const target = +counter.getAttribute('data-target');
                     const count = +counter.innerText;
-                    
-                    // Lower inc to slow and higher to speed up
                     const inc = target / speed;
 
-                    // Check if target is reached
                     if (count < target) {
-                        // Add inc to count and output in counter
                         counter.innerText = Math.ceil(count + inc);
-                        // Call function every ms
                         setTimeout(updateCount, 10);
                     } else {
                         counter.innerText = target;
@@ -68,65 +141,49 @@ document.addEventListener('DOMContentLoaded', () => {
         startCounters.observe(counter);
     });
 
-    // --- 4. Interactive Features List ---
+    // --- 7. Interactive Features List ---
     const featureItems = document.querySelectorAll('.feature-item');
+    const featureImg = document.querySelector('.feature-img');
     
+    // Simple array of images for the demo
+    const featureImages = {
+        'realtime': 'images/tracker.jpg',
+        'geofence': 'images/tracker2.jpg',
+        'history': 'images/Screenshot 2026-04-29 084758.png',
+        'security': 'images/tracker.jpg'
+    };
+
     featureItems.forEach(item => {
         item.addEventListener('click', () => {
-            // Remove active class from all
             featureItems.forEach(f => f.classList.remove('active'));
-            // Add to clicked
             item.classList.add('active');
             
-            // In a full implementation, this would trigger different animations 
-            // in the .visual-container map abstract.
             const featureType = item.getAttribute('data-feature');
-            console.log(`Switched to feature visual: ${featureType}`);
             
-            // Quick visual feedback on the radar
-            const radarCircle = document.querySelector('.radar-circle');
-            radarCircle.style.borderColor = 'rgba(245, 158, 11, 0.5)'; // Flash gold
+            // Add a slight fade effect when changing images
+            featureImg.style.opacity = '0.5';
             setTimeout(() => {
-                radarCircle.style.borderColor = 'rgba(37, 99, 235, 0.2)'; // Back to blue
-            }, 300);
+                if(featureImages[featureType]) {
+                    featureImg.src = featureImages[featureType];
+                }
+                featureImg.style.opacity = '1';
+            }, 200);
         });
     });
 
-    // --- 5. Parallax Effect on Hero Image ---
+    // --- 8. Parallax Effect on Hero Image ---
     const heroImage = document.querySelector('.hero-image');
     
-    if (window.innerWidth > 992) {
+    if (window.innerWidth > 992 && heroImage) {
         document.addEventListener('mousemove', (e) => {
             const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
             const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
             
-            heroImage.style.transform = `perspective(1000px) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            heroImage.style.transform = `perspective(1000px) rotateY(${xAxis - 5}deg) rotateX(${yAxis}deg)`;
         });
         
-        // Reset on mouse leave
         document.querySelector('.hero').addEventListener('mouseleave', () => {
-            heroImage.style.transform = `perspective(1000px) rotateY(-10deg) rotateX(0deg)`;
+            heroImage.style.transform = `perspective(1000px) rotateY(-5deg) rotateX(0deg)`;
         });
     }
-
-    // --- 6. Form Submission (Prevent default for demo) ---
-    const form = document.querySelector('.glass-form');
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const btn = form.querySelector('button');
-        const originalText = btn.innerText;
-        
-        btn.innerText = "Processing...";
-        btn.style.backgroundColor = "#10b981"; // Success green
-        
-        setTimeout(() => {
-            btn.innerText = "Message Sent!";
-            form.reset();
-            
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.style.backgroundColor = "";
-            }, 3000);
-        }, 1500);
-    });
 });
