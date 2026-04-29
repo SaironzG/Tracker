@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/KapitalEye/index.html" },
+    { "source": "/(.*)", "destination": "/KapitalEye/$1" }
+  ]
+}
