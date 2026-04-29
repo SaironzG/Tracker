@@ -1,16 +1,17 @@
 :root {
     --bg-light: #ffffff;
-    --bg-dark: #0a0e17; /* Deep slate/navy for a premium tech feel */
+    --bg-dark: #0a1128; /* Deep navy matching the logo road */
     --text-light: #f8fafc;
-    --text-dark: #1e293b;
+    --text-dark: #0a1128;
     --text-muted: #64748b;
     
-    /* Branding Colors derived from instructions */
-    --primary: #2563eb; /* Trust Blue */
-    --primary-glow: rgba(37, 99, 235, 0.4);
-    --accent: #f59e0b; /* Gold/Warning accent */
+    /* Branding Colors derived from logo */
+    --primary: #4f46e5; /* Indigo/Purple from the top of the logo */
+    --primary-light: #3b82f6; /* Blue from the bottom of the logo */
+    --primary-glow: rgba(79, 70, 229, 0.4);
+    --accent: #8b5cf6; /* Violet accent */
     --success: #10b981;
-    --surface-dark: #111827;
+    --surface-dark: #121b36;
     --surface-light: #f1f5f9;
     
     --font-heading: 'Outfit', sans-serif;
@@ -108,7 +109,7 @@ p {
 }
 
 .btn-primary {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     box-shadow: 0 4px 14px var(--primary-glow);
 }
@@ -498,7 +499,7 @@ p {
     top: 50%; left: 50%;
     width: 50%; height: 50%;
     transform-origin: top left;
-    background: linear-gradient(45deg, rgba(37, 99, 235, 0.5) 0%, transparent 60%);
+    background: linear-gradient(45deg, rgba(79, 70, 229, 0.5) 0%, transparent 60%);
     animation: sweep 4s linear infinite;
 }
 
@@ -618,7 +619,7 @@ p {
 
 /* Footer */
 footer {
-    background: #05080f;
+    background: #060a17;
     color: white;
     padding: 3rem 0;
     text-align: center;
